@@ -11,6 +11,7 @@
 - [x] DataRepository
 - [x] Directory
 - [x] Filesystem
+- [x] Mimes
 
 ### Contact
 

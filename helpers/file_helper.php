@@ -55,8 +55,6 @@
  * @link           https://codeigniter.com/user_guide/helpers/file_helper.html
  */
 
-// ------------------------------------------------------------------------
-
 if (!function_exists('is_really_writable')) {
     /**
      * Tests for file writability
@@ -102,8 +100,6 @@ if (!function_exists('is_really_writable')) {
     }
 }
 
-// ------------------------------------------------------------------------
-
 if (!function_exists('read_file')) {
     /**
      * Read File
@@ -122,8 +118,6 @@ if (!function_exists('read_file')) {
         return @file_get_contents($file);
     }
 }
-
-// ------------------------------------------------------------------------
 
 if (!function_exists('write_file')) {
     /**
@@ -158,8 +152,6 @@ if (!function_exists('write_file')) {
         return is_int($result);
     }
 }
-
-// ------------------------------------------------------------------------
 
 if (!function_exists('delete_files')) {
     /**
@@ -208,8 +200,6 @@ if (!function_exists('delete_files')) {
     }
 }
 
-// ------------------------------------------------------------------------
-
 if (!function_exists('get_filenames')) {
     /**
      * Get Filenames
@@ -250,8 +240,6 @@ if (!function_exists('get_filenames')) {
         return FALSE;
     }
 }
-
-// --------------------------------------------------------------------
 
 if (!function_exists('get_dir_file_info')) {
     /**
@@ -298,8 +286,6 @@ if (!function_exists('get_dir_file_info')) {
         return FALSE;
     }
 }
-
-// --------------------------------------------------------------------
 
 if (!function_exists('get_file_info')) {
     /**
@@ -358,8 +344,6 @@ if (!function_exists('get_file_info')) {
     }
 }
 
-// --------------------------------------------------------------------
-
 if (!function_exists('get_mime_by_extension')) {
     /**
      * Get Mime by Extension
@@ -390,8 +374,6 @@ if (!function_exists('get_mime_by_extension')) {
     }
 }
 
-// --------------------------------------------------------------------
-
 if (!function_exists('symbolic_permissions')) {
     /**
      * Symbolic Permissions
@@ -405,44 +387,11 @@ if (!function_exists('symbolic_permissions')) {
      */
     function symbolic_permissions($perms)
     {
-        if (($perms & 0xC000) === 0xC000) {
-            $symbolic = 's'; // Socket
-        } elseif (($perms & 0xA000) === 0xA000) {
-            $symbolic = 'l'; // Symbolic Link
-        } elseif (($perms & 0x8000) === 0x8000) {
-            $symbolic = '-'; // Regular
-        } elseif (($perms & 0x6000) === 0x6000) {
-            $symbolic = 'b'; // Block special
-        } elseif (($perms & 0x4000) === 0x4000) {
-            $symbolic = 'd'; // Directory
-        } elseif (($perms & 0x2000) === 0x2000) {
-            $symbolic = 'c'; // Character special
-        } elseif (($perms & 0x1000) === 0x1000) {
-            $symbolic = 'p'; // FIFO pipe
-        } else {
-            $symbolic = 'u'; // Unknown
-        }
+        $system = new nguyenanhung\Classes\Helper\Filesystem\Filesystem();
 
-        // Owner
-        $symbolic .= (($perms & 0x0100) ? 'r' : '-')
-                     . (($perms & 0x0080) ? 'w' : '-')
-                     . (($perms & 0x0040) ? (($perms & 0x0800) ? 's' : 'x') : (($perms & 0x0800) ? 'S' : '-'));
-
-        // Group
-        $symbolic .= (($perms & 0x0020) ? 'r' : '-')
-                     . (($perms & 0x0010) ? 'w' : '-')
-                     . (($perms & 0x0008) ? (($perms & 0x0400) ? 's' : 'x') : (($perms & 0x0400) ? 'S' : '-'));
-
-        // World
-        $symbolic .= (($perms & 0x0004) ? 'r' : '-')
-                     . (($perms & 0x0002) ? 'w' : '-')
-                     . (($perms & 0x0001) ? (($perms & 0x0200) ? 't' : 'x') : (($perms & 0x0200) ? 'T' : '-'));
-
-        return $symbolic;
+        return $system->symbolicPermissions($perms);
     }
 }
-
-// --------------------------------------------------------------------
 
 if (!function_exists('octal_permissions')) {
     /**
@@ -457,11 +406,11 @@ if (!function_exists('octal_permissions')) {
      */
     function octal_permissions($perms)
     {
-        return substr(sprintf('%o', $perms), -3);
+        $system = new nguyenanhung\Classes\Helper\Filesystem\Filesystem();
+
+        return $system->octalPermissions($perms);
     }
 }
-
-// --------------------------------------------------------------------
 
 if (!function_exists('file_get_directory')) {
     /**
