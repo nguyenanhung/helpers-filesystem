@@ -183,7 +183,7 @@ if (!class_exists('nguyenanhung\Classes\Helper\Filesystem\Filesystem')) {
         }
 
         /**
-         * Function createNewFolder
+         * Function createNewFolder - Create new folder and put 3 files: index.html, .htaccess and README.md
          *
          * @param string $pathname
          * @param int    $mode
@@ -207,8 +207,10 @@ if (!class_exists('nguyenanhung\Classes\Helper\Filesystem\Filesystem')) {
                     // Gen file Index.html + .htaccess
                     $fileContentIndex    = "<!DOCTYPE html>\n<html lang='vi'>\n<head>\n<title>403 Forbidden</title>\n</head>\n<body>\n<p>Directory access is forbidden.</p>\n</body>\n</html>";
                     $fileContentHtaccess = "RewriteEngine On\nOptions -Indexes\nAddType text/plain php3 php4 php5 php cgi asp aspx html css js";
-                    $this->appendToFile($pathname . '/index.html', $fileContentIndex);
-                    $this->appendToFile($pathname . '/.htaccess', $fileContentHtaccess);
+                    $fileContentReadme   = "#" . $pathname . " README";
+                    $this->appendToFile($pathname . DIRECTORY_SEPARATOR . 'index.html', $fileContentIndex);
+                    $this->appendToFile($pathname . DIRECTORY_SEPARATOR . '.htaccess', $fileContentHtaccess);
+                    $this->appendToFile($pathname . DIRECTORY_SEPARATOR . 'README.md', $fileContentReadme);
 
                     return TRUE;
                 }

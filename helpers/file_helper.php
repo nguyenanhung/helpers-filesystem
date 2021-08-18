@@ -638,3 +638,41 @@ if (!function_exists('file_rename')) {
         return rename($path, $newPath);
     }
 }
+
+if (!function_exists('format_size_units')) {
+    /**
+     * Function format_size_units
+     *
+     * @param int $bytes
+     *
+     * @return string
+     * @author   : 713uk13m <dev@nguyenanhung.com>
+     * @copyright: 713uk13m <dev@nguyenanhung.com>
+     * @time     : 08/18/2021 34:56
+     */
+    function format_size_units($bytes = 0)
+    {
+        $system = new nguyenanhung\Classes\Helper\Filesystem\Filesystem();
+
+        return $system->formatSizeUnits($bytes);
+    }
+}
+if (!function_exists('create_new_folder')) {
+    /**
+     * Function create_new_folder
+     *
+     * @param string $pathname
+     * @param int    $mode
+     *
+     * @return bool
+     * @author   : 713uk13m <dev@nguyenanhung.com>
+     * @copyright: 713uk13m <dev@nguyenanhung.com>
+     * @time     : 08/18/2021 35:49
+     */
+    function create_new_folder($pathname = '', $mode = 0777)
+    {
+        $system = new nguyenanhung\Classes\Helper\Filesystem\Filesystem();
+
+        return $system->createNewFolder($pathname, $mode);
+    }
+}
