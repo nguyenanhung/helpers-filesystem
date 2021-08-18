@@ -154,6 +154,73 @@ if (!class_exists('nguyenanhung\Classes\Helper\Filesystem\Filesystem')) {
         }
 
         /**
+         * Function formatSizeUnits
+         *
+         * @param int $bytes
+         *
+         * @return string
+         * @author   : 713uk13m <dev@nguyenanhung.com>
+         * @copyright: 713uk13m <dev@nguyenanhung.com>
+         * @time     : 08/18/2021 32:57
+         */
+        public function formatSizeUnits($bytes = 0)
+        {
+            if ($bytes >= 1073741824) {
+                $bytes = number_format($bytes / 1073741824, 2) . ' GB';
+            } elseif ($bytes >= 1048576) {
+                $bytes = number_format($bytes / 1048576, 2) . ' MB';
+            } elseif ($bytes >= 1024) {
+                $bytes = number_format($bytes / 1024, 2) . ' KB';
+            } elseif ($bytes > 1) {
+                $bytes = $bytes . ' bytes';
+            } elseif ($bytes == 1) {
+                $bytes = $bytes . ' byte';
+            } else {
+                $bytes = '0 bytes';
+            }
+
+            return $bytes;
+        }
+
+        /**
+         * Function createNewFolder
+         *
+         * @param string $pathname
+         * @param int    $mode
+         *
+         * @return bool
+         * @author   : 713uk13m <dev@nguyenanhung.com>
+         * @copyright: 713uk13m <dev@nguyenanhung.com>
+         * @time     : 08/18/2021 32:15
+         */
+        public function createNewFolder($pathname = '', $mode = 0777)
+        {
+            if (is_null($pathname) || empty($pathname)) {
+                return FALSE;
+            }
+            if (is_dir($pathname) || $pathname === "/") {
+                return TRUE;
+            }
+            if (!is_dir($pathname) && strlen($pathname) > 0) {
+                try {
+                    $this->mkdir($pathname, $mode);
+                    // Gen file Index.html + .htaccess
+                    $fileContentIndex    = "<!DOCTYPE html>\n<html lang='vi'>\n<head>\n<title>403 Forbidden</title>\n</head>\n<body>\n<p>Directory access is forbidden.</p>\n</body>\n</html>";
+                    $fileContentHtaccess = "RewriteEngine On\nOptions -Indexes\nAddType text/plain php3 php4 php5 php cgi asp aspx html css js";
+                    $this->appendToFile($pathname . '/index.html', $fileContentIndex);
+                    $this->appendToFile($pathname . '/.htaccess', $fileContentHtaccess);
+
+                    return TRUE;
+                }
+                catch (Exception $e) {
+                    return FALSE;
+                }
+            }
+
+            return FALSE;
+        }
+
+        /**
          * Tests for file writability
          *
          * is_writable() returns TRUE on Windows servers when you really can't write to
