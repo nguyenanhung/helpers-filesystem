@@ -419,5 +419,108 @@ if (!class_exists('nguyenanhung\Classes\Helper\Filesystem\Directory')) {
                 );
             }
         }
+
+        /**
+         * Check if a directory exists.
+         *
+         * @param $path
+         *
+         * @return bool
+         */
+        public static function directoryExists($path)
+        {
+            return is_dir($path);
+        }
+
+        /**
+         * Create a directory and all subdirectories.
+         *
+         * @param     $path
+         * @param int $mode
+         *
+         * @return bool
+         */
+        public static function directoryCreate($path, $mode = 0777)
+        {
+            if (!directory_exists($path)) {
+                return mkdir($path, $mode, TRUE);
+            }
+
+            return TRUE;
+        }
+
+        /**
+         * Create a Directory Map
+         *
+         * Reads the specified directory and builds an array
+         * representation of it. Sub-folders contained with the
+         * directory will be mapped as well.
+         *
+         * @param string $source_dir      Path to source
+         * @param int    $directory_depth Depth of directories to traverse
+         *                                (0 = fully recursive, 1 = current dir, etc)
+         * @param bool   $hidden          Whether to show hidden files
+         *
+         * @return    array|bool
+         */
+        public static function directoryMap($source_dir, $directory_depth = 0, $hidden = FALSE)
+        {
+            if ($fp = @opendir($source_dir)) {
+                $fileData   = array();
+                $newDepth   = $directory_depth - 1;
+                $source_dir = rtrim($source_dir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+
+                while (FALSE !== ($file = readdir($fp))) {
+                    // Remove '.', '..', and hidden files [optional]
+                    if ($file === '.' or $file === '..' or ($hidden === FALSE && $file[0] === '.')) {
+                        continue;
+                    }
+
+                    is_dir($source_dir . $file) && $file .= DIRECTORY_SEPARATOR;
+
+                    if (($directory_depth < 1 or $newDepth > 0) && is_dir($source_dir . $file)) {
+                        $fileData[$file] = static::directoryMap($source_dir . $file, $newDepth, $hidden);
+                    } else {
+                        $fileData[] = $file;
+                    }
+                }
+
+                closedir($fp);
+
+                return $fileData;
+            }
+
+            return FALSE;
+        }
+
+        /**
+         * Function directoryGetName
+         *
+         * @param $path
+         *
+         * @return string
+         * @author   : 713uk13m <dev@nguyenanhung.com>
+         * @copyright: 713uk13m <dev@nguyenanhung.com>
+         * @time     : 08/18/2021 10:20
+         */
+        public static function directoryGetName($path)
+        {
+            return basename($path);
+        }
+
+        /**
+         * Function directoryGetParent
+         *
+         * @param $path
+         *
+         * @return string
+         * @author   : 713uk13m <dev@nguyenanhung.com>
+         * @copyright: 713uk13m <dev@nguyenanhung.com>
+         * @time     : 08/18/2021 10:49
+         */
+        public static function directoryGetParent($path)
+        {
+            return dirname($path);
+        }
     }
 }

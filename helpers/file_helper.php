@@ -376,15 +376,7 @@ if (!function_exists('get_mime_by_extension')) {
      */
     function get_mime_by_extension($filename)
     {
-        static $mimes;
-
-        if (!is_array($mimes)) {
-            $mimes = nguyenanhung\Classes\Helper\Filesystem\DataRepository::getData('mimes');
-
-            if (empty($mimes)) {
-                return FALSE;
-            }
-        }
+        $mimes = nguyenanhung\Classes\Helper\Filesystem\Mimes::getMimes();
 
         $extension = strtolower(substr(strrchr($filename, '.'), 1));
 
@@ -470,7 +462,6 @@ if (!function_exists('octal_permissions')) {
 }
 
 // --------------------------------------------------------------------
-
 
 if (!function_exists('file_get_directory')) {
     /**

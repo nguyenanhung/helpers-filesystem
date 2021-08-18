@@ -19,8 +19,8 @@ namespace nguyenanhung\Classes\Helper\Filesystem;
  */
 interface ProjectInterface
 {
-    const VERSION       = '1.0.2';
-    const LAST_MODIFIED = '2021-08-17';
+    const VERSION       = '1.0.3';
+    const LAST_MODIFIED = '2021-08-18';
     const AUTHOR_NAME   = 'Hung Nguyen';
     const AUTHOR_EMAIL  = 'dev@nguyenanhung.com';
     const PROJECT_NAME  = 'Helpers - Filesystem';

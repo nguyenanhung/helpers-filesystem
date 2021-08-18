@@ -65,7 +65,6 @@ if (!function_exists('directory_map')) {
     }
 }
 
-
 if (!function_exists('directory_get_name')) {
     /**
      * Function directory_get_name
@@ -201,7 +200,7 @@ if (!function_exists('directory_copy')) {
      * @param $oldPath
      * @param $newPath
      *
-     * @return void|bool
+     * @return bool
      * @author   : 713uk13m <dev@nguyenanhung.com>
      * @copyright: 713uk13m <dev@nguyenanhung.com>
      * @time     : 08/08/2021 57:10
