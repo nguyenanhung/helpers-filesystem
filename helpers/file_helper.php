@@ -659,6 +659,7 @@ if (!function_exists('format_size_units')) {
         return $system->formatSizeUnits($bytes);
     }
 }
+
 if (!function_exists('create_new_folder')) {
     /**
      * Function create_new_folder

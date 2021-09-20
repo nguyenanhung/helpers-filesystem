@@ -116,3 +116,4 @@ GitHub.sublime-settings
 
 tmp/*
 !tmp/.gitkeep
+!tmp/README.md
