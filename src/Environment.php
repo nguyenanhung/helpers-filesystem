@@ -11,18 +11,19 @@
 namespace nguyenanhung\Classes\Helper\Filesystem;
 
 /**
- * Interface ProjectInterface
+ * Interface Environment
  *
  * @package   nguyenanhung\Classes\Helper\Filesystem
  * @author    713uk13m <dev@nguyenanhung.com>
  * @copyright 713uk13m <dev@nguyenanhung.com>
  */
-interface ProjectInterface
+interface Environment
 {
-    const VERSION       = '1.0.4';
-    const LAST_MODIFIED = '2021-08-18';
+    const VERSION       = '1.0.5';
+    const LAST_MODIFIED = '2021-09-20';
     const AUTHOR_NAME   = 'Hung Nguyen';
     const AUTHOR_EMAIL  = 'dev@nguyenanhung.com';
+    const AUTHOR_URL    = 'https://nguyenanhung.com';
     const PROJECT_NAME  = 'Helpers - Filesystem';
 
     /**

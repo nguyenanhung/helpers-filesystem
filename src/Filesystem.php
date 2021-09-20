@@ -24,9 +24,9 @@ if (!class_exists('nguyenanhung\Classes\Helper\Filesystem\Filesystem')) {
      * @author    713uk13m <dev@nguyenanhung.com>
      * @copyright 713uk13m <dev@nguyenanhung.com>
      */
-    class Filesystem extends SymfonyFilesystem implements ProjectInterface
+    class Filesystem extends SymfonyFilesystem implements Environment
     {
-        use VersionTrait;
+        use Version;
 
         /** @var null|array Mảng dữ liệu chứa các thuộc tính cần quét */
         private $scanInclude = ['*.log', '*.txt'];
@@ -47,7 +47,7 @@ if (!class_exists('nguyenanhung\Classes\Helper\Filesystem\Filesystem')) {
          *
          * @return \Iterator
          */
-        public function directoryScanner($path = '', $include = NULL, $exclude = NULL)
+        public function directoryScanner($path = '', $include = null, $exclude = null)
         {
             $scanner = new DirectoryScanner();
             if (is_array($include) && !empty($include)) {
@@ -125,15 +125,14 @@ if (!class_exists('nguyenanhung\Classes\Helper\Filesystem\Filesystem')) {
                 }
 
                 return $result;
-            }
-            catch (Exception $e) {
+            } catch (Exception $e) {
                 if (function_exists('log_message')) {
                     // Save Log if use CodeIgniter Framework
                     log_message('error', 'Error Message: ' . $e->getMessage());
                     log_message('error', 'Error Trace As String: ' . $e->getTraceAsString());
                 }
 
-                return NULL;
+                return null;
             }
         }
 
@@ -196,10 +195,10 @@ if (!class_exists('nguyenanhung\Classes\Helper\Filesystem\Filesystem')) {
         public function createNewFolder($pathname = '', $mode = 0777)
         {
             if (is_null($pathname) || empty($pathname)) {
-                return FALSE;
+                return false;
             }
             if (is_dir($pathname) || $pathname === "/") {
-                return TRUE;
+                return true;
             }
             if (!is_dir($pathname) && strlen($pathname) > 0) {
                 try {
@@ -212,14 +211,13 @@ if (!class_exists('nguyenanhung\Classes\Helper\Filesystem\Filesystem')) {
                     $this->appendToFile($pathname . DIRECTORY_SEPARATOR . '.htaccess', $fileContentHtaccess);
                     $this->appendToFile($pathname . DIRECTORY_SEPARATOR . 'README.md', $fileContentReadme);
 
-                    return TRUE;
-                }
-                catch (Exception $e) {
-                    return FALSE;
+                    return true;
+                } catch (Exception $e) {
+                    return false;
                 }
             }
 
-            return FALSE;
+            return false;
         }
 
         /**
@@ -247,22 +245,22 @@ if (!class_exists('nguyenanhung\Classes\Helper\Filesystem\Filesystem')) {
              */
             if (is_dir($file)) {
                 $file = rtrim($file, '/') . '/' . md5(mt_rand());
-                if (($fp = @fopen($file, 'ab')) === FALSE) {
-                    return FALSE;
+                if (($fp = @fopen($file, 'ab')) === false) {
+                    return false;
                 }
 
                 fclose($fp);
                 @chmod($file, 0777);
                 @unlink($file);
 
-                return TRUE;
-            } elseif (!is_file($file) or ($fp = @fopen($file, 'ab')) === FALSE) {
-                return FALSE;
+                return true;
+            } elseif (!is_file($file) or ($fp = @fopen($file, 'ab')) === false) {
+                return false;
             }
 
             fclose($fp);
 
-            return TRUE;
+            return true;
         }
 
         /**
@@ -281,7 +279,7 @@ if (!class_exists('nguyenanhung\Classes\Helper\Filesystem\Filesystem')) {
                 return file_get_contents($file);
             }
 
-            return NULL;
+            return null;
         }
 
         /**
@@ -299,13 +297,13 @@ if (!class_exists('nguyenanhung\Classes\Helper\Filesystem\Filesystem')) {
         public function writeFile($path, $data, $mode = 'wb')
         {
             if (!$fp = @fopen($path, $mode)) {
-                return FALSE;
+                return false;
             }
 
             flock($fp, LOCK_EX);
 
             for ($result = $written = 0, $length = strlen($data); $written < $length; $written += $result) {
-                if (($result = fwrite($fp, substr($data, $written))) === FALSE) {
+                if (($result = fwrite($fp, substr($data, $written))) === false) {
                     break;
                 }
             }
@@ -331,22 +329,22 @@ if (!class_exists('nguyenanhung\Classes\Helper\Filesystem\Filesystem')) {
          *
          * @return    bool
          */
-        public function deleteFiles($path, $del_dir = FALSE, $htdocs = FALSE, $_level = 0)
+        public function deleteFiles($path, $del_dir = false, $htdocs = false, $_level = 0)
         {
             // Trim the trailing slash
             $path = rtrim($path, '/\\');
 
             if (!$current_dir = @opendir($path)) {
-                return FALSE;
+                return false;
             }
 
-            while (FALSE !== ($filename = @readdir($current_dir))) {
+            while (false !== ($filename = @readdir($current_dir))) {
                 if ($filename !== '.' && $filename !== '..') {
                     $filepath = $path . DIRECTORY_SEPARATOR . $filename;
 
                     if (is_dir($filepath) && $filename[0] !== '.' && !is_link($filepath)) {
                         delete_files($filepath, $del_dir, $htdocs, $_level + 1);
-                    } elseif ($htdocs !== TRUE or !preg_match('/^(\.htaccess|index\.(html|htm|php)|web\.config)$/i', $filename)) {
+                    } elseif ($htdocs !== true or !preg_match('/^(\.htaccess|index\.(html|htm|php)|web\.config)$/i', $filename)) {
                         @unlink($filepath);
                     }
                 }
@@ -354,10 +352,10 @@ if (!class_exists('nguyenanhung\Classes\Helper\Filesystem\Filesystem')) {
 
             closedir($current_dir);
 
-            if (($del_dir === TRUE && $_level > 0)) {
+            if (($del_dir === true && $_level > 0)) {
                 return @rmdir($path);
             } else {
-                return TRUE;
+                return true;
             }
         }
 
@@ -373,22 +371,22 @@ if (!class_exists('nguyenanhung\Classes\Helper\Filesystem\Filesystem')) {
          *
          * @return    array|bool
          */
-        public function getFilenames($source_dir, $include_path = FALSE, $_recursion = FALSE)
+        public function getFilenames($source_dir, $include_path = false, $_recursion = false)
         {
             static $_fileData = array();
 
             if ($fp = @opendir($source_dir)) {
                 // reset the array and make sure $source_dir has a trailing slash on the initial call
-                if ($_recursion === FALSE) {
+                if ($_recursion === false) {
                     $_fileData  = array();
                     $source_dir = rtrim(realpath($source_dir), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
                 }
 
-                while (FALSE !== ($file = readdir($fp))) {
+                while (false !== ($file = readdir($fp))) {
                     if (is_dir($source_dir . $file) && $file[0] !== '.') {
-                        self::getFilenames($source_dir . $file . DIRECTORY_SEPARATOR, $include_path, TRUE);
+                        self::getFilenames($source_dir . $file . DIRECTORY_SEPARATOR, $include_path, true);
                     } elseif ($file[0] !== '.') {
-                        $_fileData[] = ($include_path === TRUE) ? $source_dir . $file : $file;
+                        $_fileData[] = ($include_path === true) ? $source_dir . $file : $file;
                     }
                 }
 
@@ -397,7 +395,7 @@ if (!class_exists('nguyenanhung\Classes\Helper\Filesystem\Filesystem')) {
                 return $_fileData;
             }
 
-            return FALSE;
+            return false;
         }
 
         /**
@@ -414,22 +412,22 @@ if (!class_exists('nguyenanhung\Classes\Helper\Filesystem\Filesystem')) {
          *
          * @return    array|bool
          */
-        public function getDirectoryFileInformation($source_dir, $top_level_only = TRUE, $_recursion = FALSE)
+        public function getDirectoryFileInformation($source_dir, $top_level_only = true, $_recursion = false)
         {
             static $_fileData = array();
             $relative_path = $source_dir;
 
             if ($fp = @opendir($source_dir)) {
                 // reset the array and make sure $source_dir has a trailing slash on the initial call
-                if ($_recursion === FALSE) {
+                if ($_recursion === false) {
                     $_fileData  = array();
                     $source_dir = rtrim(realpath($source_dir), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
                 }
 
                 // Used to be foreach (scandir($source_dir, 1) as $file), but scandir() is simply not as fast
-                while (FALSE !== ($file = readdir($fp))) {
-                    if (is_dir($source_dir . $file) && $file[0] !== '.' && $top_level_only === FALSE) {
-                        self::getDirectoryFileInformation($source_dir . $file . DIRECTORY_SEPARATOR, $top_level_only, TRUE);
+                while (false !== ($file = readdir($fp))) {
+                    if (is_dir($source_dir . $file) && $file[0] !== '.' && $top_level_only === false) {
+                        self::getDirectoryFileInformation($source_dir . $file . DIRECTORY_SEPARATOR, $top_level_only, true);
                     } elseif ($file[0] !== '.') {
                         $_fileData[$file]                  = $this->getFileInfo($source_dir . $file);
                         $_fileData[$file]['relative_path'] = $relative_path;
@@ -441,7 +439,7 @@ if (!class_exists('nguyenanhung\Classes\Helper\Filesystem\Filesystem')) {
                 return $_fileData;
             }
 
-            return FALSE;
+            return false;
         }
 
         /**
@@ -460,7 +458,7 @@ if (!class_exists('nguyenanhung\Classes\Helper\Filesystem\Filesystem')) {
         public function getFileInfo($file, $returned_values = array('name', 'server_path', 'size', 'date'))
         {
             if (!file_exists($file)) {
-                return FALSE;
+                return false;
             }
 
             if (is_string($returned_values)) {
@@ -524,7 +522,7 @@ if (!class_exists('nguyenanhung\Classes\Helper\Filesystem\Filesystem')) {
                     : $mimes[$extension];
             }
 
-            return FALSE;
+            return false;
         }
 
         /**
@@ -666,10 +664,10 @@ if (!class_exists('nguyenanhung\Classes\Helper\Filesystem\Filesystem')) {
                     Directory::directoryCreate($dir);
                 }
 
-                return file_put_contents($path, '') !== FALSE;
+                return file_put_contents($path, '') !== false;
             }
 
-            return TRUE;
+            return true;
         }
 
         /**
@@ -684,7 +682,7 @@ if (!class_exists('nguyenanhung\Classes\Helper\Filesystem\Filesystem')) {
         {
             $this->fileCreate($path);
 
-            return file_put_contents($path, $content) !== FALSE;
+            return file_put_contents($path, $content) !== false;
         }
 
         /**
@@ -734,7 +732,7 @@ if (!class_exists('nguyenanhung\Classes\Helper\Filesystem\Filesystem')) {
                 return unlink($path);
             }
 
-            return TRUE;
+            return true;
         }
 
         /**

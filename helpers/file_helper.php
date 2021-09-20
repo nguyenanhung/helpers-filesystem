@@ -72,7 +72,7 @@ if (!function_exists('is_really_writable')) {
     function is_really_writable($file)
     {
         // If we're on a Unix server with safe_mode off we call is_writable
-        if (DIRECTORY_SEPARATOR === '/' && (is_php('5.4') or !ini_get('safe_mode'))) {
+        if (DIRECTORY_SEPARATOR === '/' && (is_php('5.4') || !ini_get('safe_mode'))) {
             return is_writable($file);
         }
 
@@ -81,22 +81,24 @@ if (!function_exists('is_really_writable')) {
          */
         if (is_dir($file)) {
             $file = rtrim($file, '/') . '/' . md5(mt_rand());
-            if (($fp = @fopen($file, 'ab')) === FALSE) {
-                return FALSE;
+            if (($fp = @fopen($file, 'ab')) === false) {
+                return false;
             }
 
             fclose($fp);
             @chmod($file, 0777);
             @unlink($file);
 
-            return TRUE;
-        } elseif (!is_file($file) or ($fp = @fopen($file, 'ab')) === FALSE) {
-            return FALSE;
+            return true;
+        }
+
+        if (!is_file($file) || ($fp = @fopen($file, 'ab')) === false) {
+            return false;
         }
 
         fclose($fp);
 
-        return TRUE;
+        return true;
     }
 }
 
@@ -135,13 +137,13 @@ if (!function_exists('write_file')) {
     function write_file($path, $data, $mode = 'wb')
     {
         if (!$fp = @fopen($path, $mode)) {
-            return FALSE;
+            return false;
         }
 
         flock($fp, LOCK_EX);
 
         for ($result = $written = 0, $length = strlen($data); $written < $length; $written += $result) {
-            if (($result = fwrite($fp, substr($data, $written))) === FALSE) {
+            if (($result = fwrite($fp, substr($data, $written))) === false) {
                 break;
             }
         }
@@ -169,22 +171,22 @@ if (!function_exists('delete_files')) {
      *
      * @return    bool
      */
-    function delete_files($path, $del_dir = FALSE, $htdocs = FALSE, $_level = 0)
+    function delete_files($path, $del_dir = false, $htdocs = false, $_level = 0)
     {
         // Trim the trailing slash
         $path = rtrim($path, '/\\');
 
         if (!$current_dir = @opendir($path)) {
-            return FALSE;
+            return false;
         }
 
-        while (FALSE !== ($filename = @readdir($current_dir))) {
+        while (false !== ($filename = @readdir($current_dir))) {
             if ($filename !== '.' && $filename !== '..') {
                 $filepath = $path . DIRECTORY_SEPARATOR . $filename;
 
-                if (is_dir($filepath) && $filename[0] !== '.' && !is_link($filepath)) {
+                if (is_dir($filepath) && (isset($filename[0]) && $filename[0] !== '.') && !is_link($filepath)) {
                     delete_files($filepath, $del_dir, $htdocs, $_level + 1);
-                } elseif ($htdocs !== TRUE or !preg_match('/^(\.htaccess|index\.(html|htm|php)|web\.config)$/i', $filename)) {
+                } elseif ($htdocs !== true or !preg_match('/^(\.htaccess|index\.(html|htm|php)|web\.config)$/i', $filename)) {
                     @unlink($filepath);
                 }
             }
@@ -192,11 +194,11 @@ if (!function_exists('delete_files')) {
 
         closedir($current_dir);
 
-        if (($del_dir === TRUE && $_level > 0)) {
+        if (($del_dir === true && $_level > 0)) {
             return @rmdir($path);
-        } else {
-            return TRUE;
         }
+
+        return true;
     }
 }
 
@@ -213,22 +215,22 @@ if (!function_exists('get_filenames')) {
      *
      * @return    array|bool
      */
-    function get_filenames($source_dir, $include_path = FALSE, $_recursion = FALSE)
+    function get_filenames($source_dir, $include_path = false, $_recursion = false)
     {
         static $_fileData = array();
 
         if ($fp = @opendir($source_dir)) {
             // reset the array and make sure $source_dir has a trailing slash on the initial call
-            if ($_recursion === FALSE) {
+            if ($_recursion === false) {
                 $_fileData  = array();
                 $source_dir = rtrim(realpath($source_dir), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
             }
 
-            while (FALSE !== ($file = readdir($fp))) {
+            while (false !== ($file = readdir($fp))) {
                 if (is_dir($source_dir . $file) && $file[0] !== '.') {
-                    get_filenames($source_dir . $file . DIRECTORY_SEPARATOR, $include_path, TRUE);
+                    get_filenames($source_dir . $file . DIRECTORY_SEPARATOR, $include_path, true);
                 } elseif ($file[0] !== '.') {
-                    $_fileData[] = ($include_path === TRUE) ? $source_dir . $file : $file;
+                    $_fileData[] = ($include_path === true) ? $source_dir . $file : $file;
                 }
             }
 
@@ -237,7 +239,7 @@ if (!function_exists('get_filenames')) {
             return $_fileData;
         }
 
-        return FALSE;
+        return false;
     }
 }
 
@@ -256,22 +258,22 @@ if (!function_exists('get_dir_file_info')) {
      *
      * @return    array|bool
      */
-    function get_dir_file_info($source_dir, $top_level_only = TRUE, $_recursion = FALSE)
+    function get_dir_file_info($source_dir, $top_level_only = true, $_recursion = false)
     {
         static $_fileData = array();
         $relative_path = $source_dir;
 
         if ($fp = @opendir($source_dir)) {
             // reset the array and make sure $source_dir has a trailing slash on the initial call
-            if ($_recursion === FALSE) {
+            if ($_recursion === false) {
                 $_fileData  = array();
                 $source_dir = rtrim(realpath($source_dir), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
             }
 
             // Used to be foreach (scandir($source_dir, 1) as $file), but scandir() is simply not as fast
-            while (FALSE !== ($file = readdir($fp))) {
-                if (is_dir($source_dir . $file) && $file[0] !== '.' && $top_level_only === FALSE) {
-                    get_dir_file_info($source_dir . $file . DIRECTORY_SEPARATOR, $top_level_only, TRUE);
+            while (false !== ($file = readdir($fp))) {
+                if (is_dir($source_dir . $file) && $file[0] !== '.' && $top_level_only === false) {
+                    get_dir_file_info($source_dir . $file . DIRECTORY_SEPARATOR, $top_level_only, true);
                 } elseif ($file[0] !== '.') {
                     $_fileData[$file]                  = get_file_info($source_dir . $file);
                     $_fileData[$file]['relative_path'] = $relative_path;
@@ -283,7 +285,7 @@ if (!function_exists('get_dir_file_info')) {
             return $_fileData;
         }
 
-        return FALSE;
+        return false;
     }
 }
 
@@ -296,15 +298,15 @@ if (!function_exists('get_file_info')) {
      * Options are: name, server_path, size, date, readable, writable, executable, fileperms
      * Returns FALSE if the file cannot be found.
      *
-     * @param string    path to file
-     * @param mixed    array or comma separated string of information returned
+     * @param string $file            path to file
+     * @param mixed  $returned_values array or comma separated string of information returned
      *
      * @return array|false
      */
     function get_file_info($file, $returned_values = array('name', 'server_path', 'size', 'date'))
     {
         if (!file_exists($file)) {
-            return FALSE;
+            return false;
         }
 
         if (is_string($returned_values)) {
@@ -370,7 +372,7 @@ if (!function_exists('get_mime_by_extension')) {
                 : $mimes[$extension];
         }
 
-        return FALSE;
+        return false;
     }
 }
 
@@ -477,7 +479,7 @@ if (!function_exists('file_read')) {
             return file_get_contents($path);
         }
 
-        return NULL;
+        return null;
     }
 }
 
@@ -498,10 +500,10 @@ if (!function_exists('file_create')) {
                 directory_create($dir);
             }
 
-            return file_put_contents($path, '') !== FALSE;
+            return file_put_contents($path, '') !== false;
         }
 
-        return TRUE;
+        return true;
     }
 }
 
@@ -518,7 +520,7 @@ if (!function_exists('file_write')) {
     {
         file_create($path);
 
-        return file_put_contents($path, $content) !== FALSE;
+        return file_put_contents($path, $content) !== false;
     }
 }
 
@@ -574,7 +576,7 @@ if (!function_exists('file_delete')) {
             return unlink($path);
         }
 
-        return TRUE;
+        return true;
     }
 }
 

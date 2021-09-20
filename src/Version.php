@@ -11,13 +11,13 @@
 namespace nguyenanhung\Classes\Helper\Filesystem;
 
 /**
- * Trait VersionTrait
+ * Trait Version
  *
  * @package   nguyenanhung\Classes\Helper\Filesystem
  * @author    713uk13m <dev@nguyenanhung.com>
  * @copyright 713uk13m <dev@nguyenanhung.com>
  */
-trait VersionTrait
+trait Version
 {
     /**
      * Function getVersion
