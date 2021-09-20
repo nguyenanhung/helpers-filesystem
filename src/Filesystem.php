@@ -16,7 +16,7 @@ use SplFileInfo;
 use TheSeer\DirectoryScanner\DirectoryScanner;
 use Symfony\Component\Filesystem\Filesystem as SymfonyFilesystem;
 
-if (!class_exists('nguyenanhung\Classes\Helper\Filesystem\Filesystem')) {
+if (!class_exists(\nguyenanhung\Classes\Helper\Filesystem\Filesystem::class)) {
     /**
      * Class Filesystem
      *
@@ -160,7 +160,7 @@ if (!class_exists('nguyenanhung\Classes\Helper\Filesystem\Filesystem')) {
          * @return string
          * @author   : 713uk13m <dev@nguyenanhung.com>
          * @copyright: 713uk13m <dev@nguyenanhung.com>
-         * @time     : 08/18/2021 32:57
+         * @time     : 09/20/2021 59:38
          */
         public function formatSizeUnits($bytes = 0)
         {
@@ -171,11 +171,11 @@ if (!class_exists('nguyenanhung\Classes\Helper\Filesystem\Filesystem')) {
             } elseif ($bytes >= 1024) {
                 $bytes = number_format($bytes / 1024, 2) . ' KB';
             } elseif ($bytes > 1) {
-                $bytes = $bytes . ' bytes';
-            } elseif ($bytes == 1) {
-                $bytes = $bytes . ' byte';
+                $bytes .= ' bytes';
+            } elseif ($bytes === 1) {
+                $bytes .= ' byte';
             } else {
-                $bytes = '0 bytes';
+                $bytes .= ' byte';
             }
 
             return $bytes;
@@ -194,13 +194,13 @@ if (!class_exists('nguyenanhung\Classes\Helper\Filesystem\Filesystem')) {
          */
         public function createNewFolder($pathname = '', $mode = 0777)
         {
-            if (is_null($pathname) || empty($pathname)) {
+            if (empty($pathname)) {
                 return false;
             }
-            if (is_dir($pathname) || $pathname === "/") {
+            if (is_dir($pathname)) {
                 return true;
             }
-            if (!is_dir($pathname) && strlen($pathname) > 0) {
+            if (!is_dir($pathname)) {
                 try {
                     $this->mkdir($pathname, $mode);
                     // Gen file Index.html + .htaccess
@@ -254,7 +254,9 @@ if (!class_exists('nguyenanhung\Classes\Helper\Filesystem\Filesystem')) {
                 @unlink($file);
 
                 return true;
-            } elseif (!is_file($file) or ($fp = @fopen($file, 'ab')) === false) {
+            }
+
+            if (!is_file($file) or ($fp = @fopen($file, 'ab')) === false) {
                 return false;
             }
 
@@ -450,8 +452,8 @@ if (!class_exists('nguyenanhung\Classes\Helper\Filesystem\Filesystem')) {
          * Options are: name, server_path, size, date, readable, writable, executable, fileperms
          * Returns FALSE if the file cannot be found.
          *
-         * @param string    path to file
-         * @param mixed    array or comma separated string of information returned
+         * @param string $file            path to file
+         * @param mixed  $returned_values array or comma separated string of information returned
          *
          * @return array|false
          */

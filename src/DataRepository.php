@@ -10,7 +10,7 @@
 
 namespace nguyenanhung\Classes\Helper\Filesystem;
 
-if (!class_exists('nguyenanhung\Classes\Helper\Filesystem\DataRepository')) {
+if (!class_exists(\nguyenanhung\Classes\Helper\Filesystem\DataRepository::class)) {
     /**
      * Class DataRepository
      *

@@ -12,8 +12,9 @@ namespace nguyenanhung\Classes\Helper\Filesystem;
 
 use InvalidArgumentException;
 use BadMethodCallException;
+use RuntimeException;
 
-if (!class_exists('nguyenanhung\Classes\Helper\Filesystem\Directory')) {
+if (!class_exists(\nguyenanhung\Classes\Helper\Filesystem\Directory::class)) {
     /**
      * Class Directory
      *
@@ -39,10 +40,10 @@ if (!class_exists('nguyenanhung\Classes\Helper\Filesystem\Directory')) {
          */
         public static function abs2rel($absolute, $base)
         {
-            $rel = FALSE;
+            $rel = false;
 
             // if $absolute and $base are given
-            if ($absolute !== NULL && $base !== NULL) {
+            if ($absolute !== null && $base !== null) {
                 // if $absolute is a string
                 if (is_string($absolute)) {
                     // if $base is a string
@@ -121,23 +122,23 @@ if (!class_exists('nguyenanhung\Classes\Helper\Filesystem\Directory')) {
          */
         public static function copy($source, $destination, $mode = 0777)
         {
-            $isSuccess = FALSE;
+            $isSuccess = false;
 
             // if $source and $destination are given
-            if ($source !== NULL && $destination !== NULL && $mode !== NULL) {
+            if ($source !== null && $destination !== null && $mode !== null) {
                 // if $source is a string
                 if (is_string($source)) {
                     // if $destination is a string
                     if (is_string($destination)) {
                         // if $mode is an integer or false
-                        if (is_integer($mode) || $mode === FALSE) {
+                        if (is_int($mode) || $mode === false) {
                             // if the source directory exists and is a directory
                             if (is_dir($source)) {
                                 // if the source directory is readable
                                 if (is_readable($source)) {
                                     // if the destination directory does not exist and we're ok to create it
-                                    if (!file_exists($destination) && is_integer($mode)) {
-                                        mkdir($destination, $mode, TRUE);
+                                    if (is_int($mode) && !file_exists($destination) && !mkdir($destination, $mode, true) && !is_dir($destination)) {
+                                        throw new RuntimeException(sprintf('Directory "%s" was not created', $destination));
                                     }
                                     // if the destination directory exists and is a directory
                                     if (is_dir($destination)) {
@@ -147,9 +148,9 @@ if (!class_exists('nguyenanhung\Classes\Helper\Filesystem\Directory')) {
                                             $sourceDir = opendir($source);
                                             // loop through the entities in the source directory
                                             $entity = readdir($sourceDir);
-                                            while ($entity !== FALSE) {
+                                            while ($entity !== false) {
                                                 // if not the special entities "." and ".."
-                                                if ($entity != '.' && $entity != '..') {
+                                                if ($entity !== '.' && $entity !== '..') {
                                                     // if the file is a dir
                                                     if (is_dir($source . DIRECTORY_SEPARATOR . $entity)) {
                                                         // recursively copy the dir
@@ -174,7 +175,7 @@ if (!class_exists('nguyenanhung\Classes\Helper\Filesystem\Directory')) {
                                                     // set $isSuccess to true in case the directory is empty
                                                     // if it's not empty, $isSuccess will be overwritten on the next iteration
                                                     //
-                                                    $isSuccess = TRUE;
+                                                    $isSuccess = true;
                                                 }
                                                 // advance to the next file
                                                 $entity = readdir($sourceDir);
@@ -271,10 +272,10 @@ if (!class_exists('nguyenanhung\Classes\Helper\Filesystem\Directory')) {
          */
         public static function remove($directory, $container)
         {
-            $isSuccess = FALSE;
+            $isSuccess = false;
 
             // if $directory and $container are given
-            if ($directory !== NULL && $container !== NULL) {
+            if ($directory !== null && $container !== null) {
                 // if $directory is a string
                 if (is_string($directory)) {
                     // if $container is a string
@@ -290,9 +291,9 @@ if (!class_exists('nguyenanhung\Classes\Helper\Filesystem\Directory')) {
                                     // read the first entity
                                     $entity = readdir($dir);
                                     // loop through the dir's entities
-                                    while ($entity !== FALSE) {
+                                    while ($entity !== false) {
                                         // if the entity is not the special chars "." and ".."
-                                        if ($entity != '.' && $entity != '..') {
+                                        if ($entity !== '.' && $entity !== '..') {
                                             // if the entity is a sub-directory
                                             if (is_dir($directory . DIRECTORY_SEPARATOR . $entity)) {
                                                 // clear and delete the sub-directory
@@ -313,7 +314,7 @@ if (!class_exists('nguyenanhung\Classes\Helper\Filesystem\Directory')) {
                                             // set $isSuccess true in case the directory is empty
                                             // if it's not empty, $isSuccess will be overwritten anyway
                                             //
-                                            $isSuccess = TRUE;
+                                            $isSuccess = true;
                                         }
                                         // advance to the next entity
                                         $entity = readdir($dir);
@@ -385,29 +386,25 @@ if (!class_exists('nguyenanhung\Classes\Helper\Filesystem\Directory')) {
         public static function startsWith($haystack, $needle)
         {
             // if $haystack and $needle are given
-            if ($haystack !== NULL && $needle !== NULL) {
+            if ($haystack !== null && $needle !== null) {
                 // if $haystack is a string
                 if (is_string($haystack)) {
                     // if $needle is a string
                     if (is_string($needle)) {
                         // if $haystack is not empty
-                        if (strlen($haystack) > 0) {
-                            // if $needle is not empty
-                            if (strlen($needle) > 0) {
-                                $startsWith = !strncmp($haystack, $needle, strlen($needle));
-                            } else {
-                                $startsWith = FALSE;
-                            }
+                        // if $needle is not empty
+                        if (($haystack !== '') && $needle !== '') {
+                            $startsWith = !strncmp($haystack, $needle, strlen($needle));
                         } else {
-                            $startsWith = FALSE;
+                            $startsWith = false;
                         }
 
                         return $startsWith;
-                    } else {
-                        throw new InvalidArgumentException(
-                            __METHOD__ . " expects the second parameter, the needle, to be a string"
-                        );
                     }
+
+                    throw new InvalidArgumentException(
+                        __METHOD__ . " expects the second parameter, the needle, to be a string"
+                    );
                 } else {
                     throw new InvalidArgumentException(
                         __METHOD__ . " expects the first parameter, the haystack, to be a string"
@@ -443,10 +440,10 @@ if (!class_exists('nguyenanhung\Classes\Helper\Filesystem\Directory')) {
         public static function directoryCreate($path, $mode = 0777)
         {
             if (!directory_exists($path)) {
-                return mkdir($path, $mode, TRUE);
+                return mkdir($path, $mode, true);
             }
 
-            return TRUE;
+            return true;
         }
 
         /**
@@ -463,22 +460,22 @@ if (!class_exists('nguyenanhung\Classes\Helper\Filesystem\Directory')) {
          *
          * @return    array|bool
          */
-        public static function directoryMap($source_dir, $directory_depth = 0, $hidden = FALSE)
+        public static function directoryMap($source_dir, $directory_depth = 0, $hidden = false)
         {
             if ($fp = @opendir($source_dir)) {
                 $fileData   = array();
                 $newDepth   = $directory_depth - 1;
                 $source_dir = rtrim($source_dir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
 
-                while (FALSE !== ($file = readdir($fp))) {
+                while (false !== ($file = readdir($fp))) {
                     // Remove '.', '..', and hidden files [optional]
-                    if ($file === '.' or $file === '..' or ($hidden === FALSE && $file[0] === '.')) {
+                    if ($file === '.' || $file === '..' || ($hidden === false && $file[0] === '.')) {
                         continue;
                     }
 
                     is_dir($source_dir . $file) && $file .= DIRECTORY_SEPARATOR;
 
-                    if (($directory_depth < 1 or $newDepth > 0) && is_dir($source_dir . $file)) {
+                    if (($directory_depth < 1 || $newDepth > 0) && is_dir($source_dir . $file)) {
                         $fileData[$file] = static::directoryMap($source_dir . $file, $newDepth, $hidden);
                     } else {
                         $fileData[] = $file;
@@ -490,7 +487,7 @@ if (!class_exists('nguyenanhung\Classes\Helper\Filesystem\Directory')) {
                 return $fileData;
             }
 
-            return FALSE;
+            return false;
         }
 
         /**

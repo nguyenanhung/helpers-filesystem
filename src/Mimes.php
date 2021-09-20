@@ -10,7 +10,7 @@
 
 namespace nguyenanhung\Classes\Helper\Filesystem;
 
-if (!class_exists('nguyenanhung\Classes\Helper\Filesystem\Mimes')) {
+if (!class_exists(\nguyenanhung\Classes\Helper\Filesystem\Mimes::class)) {
     class Mimes
     {
         /**
@@ -51,7 +51,7 @@ if (!class_exists('nguyenanhung\Classes\Helper\Filesystem\Mimes')) {
                     : $mimes[$extension];
             }
 
-            return FALSE;
+            return false;
         }
     }
 }

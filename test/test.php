@@ -8,3 +8,7 @@
  * Time: 20:52
  */
 require_once __DIR__ . '/../vendor/autoload.php';
+
+$tmpPath = __DIR__ . '/../tmp/';
+
+
